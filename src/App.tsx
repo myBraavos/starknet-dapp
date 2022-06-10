@@ -57,7 +57,12 @@ function Sign() {
             <Typography variant={"body1"}>{"Enter a message to sign"}</Typography>
             <TextField
                 value={message}
-                onChange={e => setMessage(e.currentTarget.value ?? "")}
+                onChange={e => {
+                    if (signature) {
+                        setSignature(undefined);
+                    }
+                    setMessage(e.currentTarget.value ?? "");
+                }}
             />
             <Button
                 variant={"contained"}
@@ -70,29 +75,27 @@ function Sign() {
                 {"Sign"}
             </Button>
             {!!signature?.length && (
-                <>
-                    <Box>
-                        <List dense disablePadding>
-                            <ListSubheader sx={{ mt: 2 }}>
-                                {"Signature"}
-                                <IconButton
-                                    size={"small"}
-                                    onClick={() => copyToClipboard(signature?.join(" "))}>
-                                    <ContentCopy fontSize={"small"} />
-                                </IconButton>
-                            </ListSubheader>
+                <Box>
+                    <List dense disablePadding>
+                        <ListSubheader sx={{ mt: 2 }}>
+                            {"Signature"}
+                            <IconButton
+                                size={"small"}
+                                onClick={() => copyToClipboard(signature?.join(" "))}>
+                                <ContentCopy fontSize={"small"} />
+                            </IconButton>
+                        </ListSubheader>
 
-                            {signature.map((val, idx) => (
-                                <ListItem key={val.substring(0, 5)}>
-                                    <ListItemText
-                                        primary={val}
-                                        secondary={idx === 0 ? "r" : "s"}
-                                    />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Box>
-                </>
+                        {signature.map((val, idx) => (
+                            <ListItem key={val.substring(0, 5)}>
+                                <ListItemText
+                                    primary={val}
+                                    secondary={idx === 0 ? "r" : "s"}
+                                />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
             )}
         </Stack>
     );
