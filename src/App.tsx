@@ -104,8 +104,13 @@ function Sign() {
 function App() {
     const [isConnected, setIsConnected] = useState<boolean>(getStarknet().isConnected);
 
+    // silently attempt to connect with a pre-authorized wallet
     useEffect(() => {
-        connect({ showList: false });
+        connect({ showList: false }).then(wallet => {
+            wallet
+                ?.enable({ showModal: false })
+                .then(account => setIsConnected(!!wallet?.isConnected));
+        });
     }, []);
 
     return (
