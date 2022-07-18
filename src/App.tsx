@@ -205,14 +205,20 @@ function Call() {
     );
 }
 
-function Invoke() {
+function Invoke(network?: string) {
     const mint = async () => {
         const wallet = getStarknet();
         if (wallet.isConnected) {
+            let contractAddress =
+                "0x06e931246fbae79e0453f780ed58a4cb2ff91f7f1c702705c3c1de41a55d9e72";
+            if (network === "dev") {
+                contractAddress =
+                    "0x02b217fa018937200b8110d3d2a37a4694c017b6a6d580e3e7ad96e6d11bac2e";
+            }
+
             const erc20Contract = new Contract(
                 Erc20Abi as Abi,
-                "0x06e931246fbae79e0453f780ed58a4cb2ff91f7f1c702705c3c1de41a55d9e72",
-                // @ts-ignore
+                contractAddress,
                 wallet.account
             );
 
