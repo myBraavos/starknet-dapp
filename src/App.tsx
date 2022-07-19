@@ -205,15 +205,18 @@ function Call() {
     );
 }
 
-function Invoke(network?: string) {
+function Invoke({ network = "goerli-alpha" }: { network?: string }) {
     const mint = async () => {
         const wallet = getStarknet();
         if (wallet.isConnected) {
-            let contractAddress =
-                "0x06e931246fbae79e0453f780ed58a4cb2ff91f7f1c702705c3c1de41a55d9e72";
-            if (network === "dev") {
-                contractAddress =
-                    "0x02b217fa018937200b8110d3d2a37a4694c017b6a6d580e3e7ad96e6d11bac2e";
+            const contractAddress =
+                network === "goerli-alpha"
+                    ? "0x06e931246fbae79e0453f780ed58a4cb2ff91f7f1c702705c3c1de41a55d9e72"
+                    : network === "dev"
+                    ? "0x02b217fa018937200b8110d3d2a37a4694c017b6a6d580e3e7ad96e6d11bac2e"
+                    : undefined;
+            if (!contractAddress) {
+                return undefined;
             }
 
             const erc20Contract = new Contract(
@@ -235,14 +238,14 @@ function Invoke(network?: string) {
             <CardContent>
                 <Stack sx={{ mt: 2 }} direction={"row"} alignItems={"center"}>
                     <StarknetIcon width={32} style={{ marginInlineEnd: 8 }} />
-                    <Typography>Mint demo tokens</Typography>
+                    <Typography>{"Mint demo tokens"}</Typography>
                 </Stack>
 
                 <Button
                     sx={{ mt: 2, width: "50%" }}
                     variant={"contained"}
                     onClick={() => mint()}>
-                    Add
+                    {"Add"}
                 </Button>
             </CardContent>
         </Card>
@@ -310,7 +313,9 @@ function App() {
                                 await wallet.enable({ showModal: true });
                                 setIsConnected(!!wallet?.isConnected);
                             }
-                        } catch {}
+                        } catch (err) {
+                            console.error(err);
+                        }
                     }}>
                     {"Connect Wallet"}
                 </Button>
