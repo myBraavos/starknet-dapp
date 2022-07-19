@@ -151,12 +151,21 @@ function WatchAsset() {
     );
 }
 
-function Call() {
+function Call({ network = "goerli-alpha" }: { network?: string }) {
     const [balance, setBalance] = useState<string>("");
 
-    const readTokenBalance = async (
-        token_address: string = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
-    ): Promise<string | undefined> => {
+    const token_address =
+        network === "goerli-alpha"
+            ? "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
+            : network === "devnet"
+            ? "0x62230ea046a9a5fbc261ac77d03c8d41e5d442db2284587570ab46455fd2488"
+            : undefined;
+
+    const readTokenBalance = async (): Promise<string | undefined> => {
+        if (!token_address) {
+            return undefined;
+        }
+
         const wallet = getStarknet();
         if (!wallet.isConnected) return undefined;
 
