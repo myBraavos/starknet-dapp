@@ -285,10 +285,13 @@ function App() {
 
     // silently attempt to connect with a pre-authorized wallet
     useEffect(() => {
+        // match the dapp with a wallet instance
         connect({ showList: false }).then(wallet => {
-            wallet
-                ?.enable({ showModal: false })
-                .then(() => setIsConnected(!!wallet?.isConnected));
+            // connect the dapp with the chosen wallet instance
+            wallet?.enable({ showModal: false }).then(() => {
+                const isConnected = !!wallet?.isConnected;
+                setIsConnected(isConnected);
+            });
         });
     }, []);
 
