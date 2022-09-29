@@ -254,7 +254,7 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
                     sx={{ mt: 2, width: "50%" }}
                     variant={"contained"}
                     onClick={() => mint()}>
-                    {"Add"}
+                    {"Mint"}
                 </Button>
             </CardContent>
         </Card>
