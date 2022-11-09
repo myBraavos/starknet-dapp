@@ -309,9 +309,13 @@ function App() {
                     variant={"contained"}
                     onClick={async () => {
                         try {
-                            const wallet = await connect({
-                                include: ["bravos"],
-                            });
+                            // const wallet = await connect({
+                            //     include: ["bravos"],
+                            // });
+                            await getStarknet()?.enable({
+                                showModal: true,
+                              });
+                            const wallet = getStarknet();
                             if (wallet) {
                                 await wallet.enable({ showModal: true });
                                 setIsConnected(!!wallet?.isConnected);
