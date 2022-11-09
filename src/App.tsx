@@ -227,7 +227,7 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
 
             return erc20Contract.mint(
                 wallet.account.address,
-                parseInputAmountToUint256("5000")
+                parseInputAmountToUint256("0.000000000000005")
             );
         }
     };
