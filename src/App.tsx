@@ -155,11 +155,7 @@ function Call({ network = "goerli-alpha" }: { network?: string }) {
     const [balance, setBalance] = useState<string>("");
 
     const token_address =
-        network === "goerli-alpha"
-            ? "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
-            : network === "devnet"
-            ? "0x62230ea046a9a5fbc261ac77d03c8d41e5d442db2284587570ab46455fd2488"
-            : undefined;
+        "0x07b811b466a916a7fa691d71e577f0e91523ea2716d41933262ad242a40379d8";
 
     const readTokenBalance = async (): Promise<string | undefined> => {
         if (!token_address) {
@@ -218,12 +214,7 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
     const mint = async () => {
         const wallet = getStarknet();
         if (wallet.isConnected) {
-            const contractAddress =
-                network === "goerli-alpha"
-                    ? "0x06e931246fbae79e0453f780ed58a4cb2ff91f7f1c702705c3c1de41a55d9e72"
-                    : network === "dev"
-                    ? "0x02b217fa018937200b8110d3d2a37a4694c017b6a6d580e3e7ad96e6d11bac2e"
-                    : undefined;
+            const contractAddress = "0x07b811b466a916a7fa691d71e577f0e91523ea2716d41933262ad242a40379d8";
             if (!contractAddress) {
                 return undefined;
             }
@@ -318,9 +309,20 @@ function App() {
                     variant={"contained"}
                     onClick={async () => {
                         try {
-                            const wallet = await connect({
-                                include: ["braavos"],
-                            });
+                            // Raw version
+                            // const wallet = await connect({
+                            //     include: ["braavos"],
+                            // });
+                            // if (wallet) {
+                            // ------------------------
+
+                            // Version from Starkscan
+                            await getStarknet()?.enable({
+                                showModal: true,
+                              });
+                            const wallet = getStarknet();
+                            // ------------------------
+
                             if (wallet) {
                                 await wallet.enable({ showModal: true });
                                 setIsConnected(!!wallet?.isConnected);
