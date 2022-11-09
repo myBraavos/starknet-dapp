@@ -155,7 +155,7 @@ function Call({ network = "goerli-alpha" }: { network?: string }) {
     const [balance, setBalance] = useState<string>("");
 
     const token_address =
-        "0x07b811b466a916a7fa691d71e577f0e91523ea2716d41933262ad242a40379d8";
+        "0x04fa673235a7b3edd83bc4bc4c77c8351637cd4757c0056e5242d35ce865933b";
 
     const readTokenBalance = async (): Promise<string | undefined> => {
         if (!token_address) {
@@ -214,7 +214,7 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
     const mint = async () => {
         const wallet = getStarknet();
         if (wallet.isConnected) {
-            const contractAddress = "0x07b811b466a916a7fa691d71e577f0e91523ea2716d41933262ad242a40379d8";
+            const contractAddress = "0x04fa673235a7b3edd83bc4bc4c77c8351637cd4757c0056e5242d35ce865933b";
             if (!contractAddress) {
                 return undefined;
             }
@@ -227,7 +227,7 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
 
             return erc20Contract.mint(
                 wallet.account.address,
-                parseInputAmountToUint256("100")
+                parseInputAmountToUint256("5000")
             );
         }
     };
