@@ -309,20 +309,9 @@ function App() {
                     variant={"contained"}
                     onClick={async () => {
                         try {
-                            // Raw version
-                            // const wallet = await connect({
-                            //     include: ["braavos"],
-                            // });
-                            // if (wallet) {
-                            // ------------------------
-
-                            // Version from Starkscan
-                            await getStarknet()?.enable({
-                                showModal: true,
-                              });
-                            const wallet = getStarknet();
-                            // ------------------------
-
+                            const wallet = await connect({
+                                include: ["bravos"],
+                            });
                             if (wallet) {
                                 await wallet.enable({ showModal: true });
                                 setIsConnected(!!wallet?.isConnected);
