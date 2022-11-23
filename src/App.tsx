@@ -155,7 +155,7 @@ function Call({ network = "goerli-alpha" }: { network?: string }) {
     const [balance, setBalance] = useState<string>("");
 
     const token_address =
-        "0x04fa673235a7b3edd83bc4bc4c77c8351637cd4757c0056e5242d35ce865933b";
+        "0x05c2dd95b456262e023c6ee54d7cdf8b078c7779986ae0ee9a72591d7d743fc3";
 
     const readTokenBalance = async (): Promise<string | undefined> => {
         if (!token_address) {
@@ -214,7 +214,7 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
     const mint = async () => {
         const wallet = getStarknet();
         if (wallet.isConnected) {
-            const contractAddress = "0x04fa673235a7b3edd83bc4bc4c77c8351637cd4757c0056e5242d35ce865933b";
+            const contractAddress = "0x05c2dd95b456262e023c6ee54d7cdf8b078c7779986ae0ee9a72591d7d743fc3";
             if (!contractAddress) {
                 return undefined;
             }
