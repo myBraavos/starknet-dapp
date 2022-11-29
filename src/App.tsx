@@ -21,7 +21,8 @@ import { ReactComponent as DaiIcon } from "./dia.svg";
 import { ReactComponent as EthIcon } from "./eth.svg";
 import BigNumber from "bignumber.js";
 import Erc20Abi from "./ERC20_Mintable_abi.json";
-import { composeUInt256, parseInputAmountToUint256 } from "./utils";
+import Erc721Abi from "./ERC721_Mintable_abi.json";
+import { composeUInt256, getUint256CalldataFromBN, parseInputAmountToUint256 } from "./utils";
 
 function Sign() {
     const [message, setMessage] = useState<string>("");
@@ -214,7 +215,8 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
     const mint = async () => {
         const wallet = getStarknet();
         if (wallet.isConnected) {
-            const contractAddress = "0x0095b10fe63b5d7bf3809909841c25eface7d56f3d28563c5913b14368c6473c";
+            const contractAddress =
+                "0x0095b10fe63b5d7bf3809909841c25eface7d56f3d28563c5913b14368c6473c";
             if (!contractAddress) {
                 return undefined;
             }
@@ -252,6 +254,81 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
     );
 }
 
+function MintNFT() {
+    const [tokenId, setTokenId] = useState<string>(""); 
+    const [name, setName] = useState<string>("");
+    const [description, setDescription] = useState<string>("");
+
+    const mintNft = async (tokenId: string, name: string, description: string) => {
+        const wallet = getStarknet();
+        if (wallet.isConnected) {
+            const contractAddress =
+                "0x051e05375d9a1be7eae3b22229f67aeea1a004eca989697230bed0d56deb7ebe";
+            if (!contractAddress) {
+                return undefined;
+            }
+
+            const erc721Contract = new Contract(
+                Erc721Abi as Abi,
+                contractAddress,
+                wallet.account
+            );
+
+            return await erc721Contract.mint(
+              wallet.account.address,
+              getUint256CalldataFromBN(tokenId)
+            );
+
+          //   return erc721Contract.setTokenURI(
+          //     getUint256CalldataFromBN(tokenId),
+          //     "5640288304951420270"
+          // );
+        }
+    };
+
+    return (
+        <Card sx={{ height: 355 }}>
+            <CardHeader title={"Mint NFT"} />
+            <CardContent>
+                <Stack spacing={1}>
+                    <TextField
+                        value={tokenId}
+                        style={{ maxWidth: "50%" }}
+                        placeholder={"Enter a NFT token id"}
+                        type="number"
+                        onChange={e => setTokenId(e.currentTarget.value ?? "")}
+                    />
+                    <TextField
+                        value={name}
+                        style={{ maxWidth: "50%" }}
+                        placeholder={"Enter a name of NFT"}
+                        onChange={e => setName(e.currentTarget.value ?? "")}
+                    />
+                    <TextField
+                        value={description}
+                        style={{ maxWidth: "50%" }}
+                        placeholder={"Enter a NFT description"}
+                        onChange={e => setDescription(e.currentTarget.value ?? "")}
+                    />
+                    <Button
+                        variant={"contained"}
+                        disabled={!name?.trim() || !description?.trim() || !tokenId?.trim()}
+                        style={{ maxWidth: "50%" }}
+                        onClick={() => {
+                            mintNft(tokenId, name, description)
+                                .then(result => {
+                                    console.log(result);
+                                })
+                                .catch(err => console.error(err));
+                        }}>
+                        {"Mint NFT"}
+                    </Button>
+                </Stack>
+            </CardContent>
+        </Card>
+    );
+}
+
 function Commands() {
     return (
         <Grid sx={{ padding: 4 }} container rowSpacing={8} columnSpacing={8}>
@@ -266,6 +343,9 @@ function Commands() {
             </Grid>
             <Grid item xs={6}>
                 <Invoke />
+            </Grid>
+            <Grid item xs={6}>
+                <MintNFT />
             </Grid>
         </Grid>
     );
@@ -314,7 +394,7 @@ function App() {
                             // });
                             await getStarknet()?.enable({
                                 showModal: true,
-                              });
+                            });
                             const wallet = getStarknet();
                             if (wallet) {
                                 await wallet.enable({ showModal: true });
