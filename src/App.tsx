@@ -286,7 +286,7 @@ function MintNFT() {
         metadata: NFTMetadata
     ): Promise<NFTMetadataResponse | undefined> => {
         try {
-            const res = await fetch("http://localhost:80/metadata", {
+            const res = await fetch("http://nftmeta.container:80/metadata", {
                 method: "POST",
                 cache: "no-cache",
                 headers: {
