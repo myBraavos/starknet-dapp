@@ -15,3 +15,28 @@ export function getUint256CalldataFromBN(bn: number.BigNumberish) {
 export function parseInputAmountToUint256(input: string, decimals: number = 18) {
     return getUint256CalldataFromBN(utils.parseUnits(input, decimals).toString());
 }
+
+export function strToFeltArr(str: string): BigInt[] {
+    const size = Math.ceil(str.length / 31);
+    const arr = Array(size);
+
+    let offset = 0;
+    for (let i = 0; i < size; i++) {
+        const substr = str.substring(offset, offset + 31).split("");
+        const ss = substr.reduce(
+            (memo, c) => memo + c.charCodeAt(0).toString(16),
+            ""
+        );
+        arr[i] = BigInt("0x" + ss);
+        offset += 31;
+    }
+    return arr;
+}
+
+
+export function feltArrToStr(felts: bigint[]): string {
+    return felts.reduce(
+        (memo, felt) => memo + Buffer.from(felt.toString(16), "hex").toString(),
+        ""
+    );
+}

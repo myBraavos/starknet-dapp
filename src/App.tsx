@@ -22,7 +22,27 @@ import { ReactComponent as EthIcon } from "./eth.svg";
 import BigNumber from "bignumber.js";
 import Erc20Abi from "./ERC20_Mintable_abi.json";
 import Erc721Abi from "./ERC721_Mintable_abi.json";
-import { composeUInt256, getUint256CalldataFromBN, parseInputAmountToUint256 } from "./utils";
+import {
+    composeUInt256,
+    getUint256CalldataFromBN,
+    parseInputAmountToUint256,
+} from "./utils";
+import { type } from "os";
+
+interface NFTMetadata {
+    contract_address: string;
+    owner: string;
+    token_id: string;
+    name: string;
+    description: string;
+    image: string;
+    animation_url: string | null;
+    external_url: string | null;
+}
+
+interface NFTMetadataResponse extends NFTMetadata {
+    id: string;
+}
 
 function Sign() {
     const [message, setMessage] = useState<string>("");
@@ -255,9 +275,31 @@ function Invoke({ network = "goerli-alpha" }: { network?: string }) {
 }
 
 function MintNFT() {
-    const [tokenId, setTokenId] = useState<string>(""); 
+    const [tokenId, setTokenId] = useState<string>("");
     const [name, setName] = useState<string>("");
     const [description, setDescription] = useState<string>("");
+    const [imageUrl, setImageUrl] = useState<string>(
+        "https://braavos.app/wp-content/uploads/2022/10/robot-nft.png"
+    );
+
+    const postNftMetadata = async (
+        metadata: NFTMetadata
+    ): Promise<NFTMetadataResponse | undefined> => {
+        try {
+            const res = await fetch("http://localhost:80/metadata", {
+                method: "POST",
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(metadata),
+            });
+
+            return await res.json();
+        } catch (e) {
+            return undefined;
+        }
+    };
 
     const mintNft = async (tokenId: string, name: string, description: string) => {
         const wallet = getStarknet();
@@ -274,15 +316,30 @@ function MintNFT() {
                 wallet.account
             );
 
-            return await erc721Contract.mint(
-              wallet.account.address,
-              getUint256CalldataFromBN(tokenId)
+            await erc721Contract.mint(
+                wallet.account.address,
+                getUint256CalldataFromBN(tokenId)
             );
 
-          //   return erc721Contract.setTokenURI(
-          //     getUint256CalldataFromBN(tokenId),
-          //     "5640288304951420270"
-          // );
+            const tokenMetadata = {
+                contract_address: contractAddress,
+                owner: wallet.account.address,
+                token_id: String(tokenId),
+                name: name,
+                description: description,
+                image: imageUrl,
+                animation_url: null,
+                external_url: null,
+            };
+
+            const postMetadataResult = await postNftMetadata(tokenMetadata);
+
+            if (postMetadataResult && postMetadataResult.id) {
+                erc721Contract.setTokenURI(
+                    getUint256CalldataFromBN(tokenId),
+                    String(postMetadataResult.id)
+                );
+            }
         }
     };
 
@@ -291,35 +348,47 @@ function MintNFT() {
             <CardHeader title={"Mint NFT"} />
             <CardContent>
                 <Stack spacing={1}>
-                    <TextField
-                        value={tokenId}
-                        style={{ maxWidth: "50%" }}
-                        placeholder={"Enter a NFT token id"}
-                        type="number"
-                        onChange={e => setTokenId(e.currentTarget.value ?? "")}
-                    />
-                    <TextField
-                        value={name}
-                        style={{ maxWidth: "50%" }}
-                        placeholder={"Enter a name of NFT"}
-                        onChange={e => setName(e.currentTarget.value ?? "")}
-                    />
+                    <Stack spacing={1} direction="row" style={{ maxWidth: "60%" }}>
+                        <TextField
+                            data-testId="mint-nft-tokenid-field"
+                            value={tokenId}
+                            placeholder={"Enter a NFT token id"}
+                            type="number"
+                            onChange={e => setTokenId(e.currentTarget.value ?? "")}
+                        />
+                        <TextField
+                            data-testId="mint-nft-name-field"
+                            value={name}
+                            placeholder={"Enter a name of NFT"}
+                            onChange={e => setName(e.currentTarget.value ?? "")}
+                        />
+                    </Stack>
                     <TextField
                         value={description}
-                        style={{ maxWidth: "50%" }}
+                        data-testId="mint-nft-description-field"
+                        style={{ maxWidth: "60%" }}
                         placeholder={"Enter a NFT description"}
                         onChange={e => setDescription(e.currentTarget.value ?? "")}
                     />
+                    <TextField
+                        value={imageUrl}
+                        data-testId="mint-nft-imageurl-field"
+                        style={{ maxWidth: "60%" }}
+                        placeholder={"Enter an image url"}
+                        onChange={e => setImageUrl(e.currentTarget.value ?? "")}
+                    />
                     <Button
+                        data-testId="mint-nft-submit-btn"
                         variant={"contained"}
-                        disabled={!name?.trim() || !description?.trim() || !tokenId?.trim()}
-                        style={{ maxWidth: "50%" }}
+                        disabled={
+                            !name?.trim() ||
+                            !description?.trim() ||
+                            !tokenId?.trim() ||
+                            !imageUrl?.trim()
+                        }
+                        style={{ maxWidth: "60%" }}
                         onClick={() => {
-                            mintNft(tokenId, name, description)
-                                .then(result => {
-                                    console.log(result);
-                                })
-                                .catch(err => console.error(err));
+                            mintNft(tokenId, name, description);
                         }}>
                         {"Mint NFT"}
                     </Button>
