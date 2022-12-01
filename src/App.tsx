@@ -289,6 +289,7 @@ function MintNFT() {
             const res = await fetch("http://nftmeta.container/metadata", {
                 method: "POST",
                 cache: "no-cache",
+                mode: "no-cors",
                 headers: {
                     "Content-Type": "application/json",
                 },
