@@ -286,10 +286,11 @@ function MintNFT() {
         metadata: NFTMetadata
     ): Promise<NFTMetadataResponse | undefined> => {
         try {
-            const res = await fetch("http://nftmeta.container/metadata", {
+            const queryParams = new URLSearchParams(window.location.search);
+            const nftProviderHost = queryParams.get("nftProviderHost") || "localhost";
+            const res = await fetch(`http://${nftProviderHost}/metadata`, {
                 method: "POST",
                 cache: "no-cache",
-                mode: "no-cors",
                 headers: {
                     "Content-Type": "application/json",
                 },
